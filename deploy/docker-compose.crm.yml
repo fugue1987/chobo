@@ -1,0 +1,19 @@
+services:
+  chobo-crm:
+    image: chobo-crm:latest
+    container_name: chobo-crm
+    restart: always
+    env_file: ./chobo.prod.env          # CHOBO_DATABASE_URL + CHOBO_INGEST_SECRET(宿主手填,gitignored)
+    environment:
+      NODE_ENV: production
+      CHOBO_PORT: "8787"
+      CHOBO_HOST: 0.0.0.0
+      CHOBO_WEB_DIR: /app/web
+      CHOBO_PRICE_SEED: /app/price-seed.json
+    ports:
+      - "127.0.0.1:8787:8787"           # 只绑本机,nginx/SSH 隧道前置
+    networks: [pgnet]
+networks:
+  pgnet:
+    external: true
+    name: postgres18_default            # 复用 postgres18 所在外部网,容器名 postgres18 直达 PG

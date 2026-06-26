@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chobo.dev/contracts/price-table.schema.json",
+  "title": "chobo price table seed",
+  "type": "object",
+  "required": ["version", "rows"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["provider", "model", "operation"],
+        "additionalProperties": false,
+        "properties": {
+          "provider":            { "type": "string" },
+          "model":               { "type": "string" },
+          "operation":           { "enum": ["chat", "image", "video", "embedding"] },
+          "input_tier_max":      { "type": ["integer", "null"] },
+          "input_per_mtok":      { "type": ["number", "null"] },
+          "output_per_mtok":     { "type": ["number", "null"] },
+          "cache_read_per_mtok": { "type": ["number", "null"] },
+          "reasoning_per_mtok":  { "type": ["number", "null"] },
+          "per_image":           { "type": ["number", "null"] },
+          "currency":            { "type": "string", "default": "CNY" }
+        }
+      }
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["provider", "alias", "canonical"],
+        "additionalProperties": false,
+        "properties": {
+          "provider":  { "type": "string" },
+          "alias":     { "type": "string" },
+          "canonical": { "type": "string" }
+        }
+      }
+    }
+  }
+}

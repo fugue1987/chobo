@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E '\\\\.\\(md|json|py|ts|toml|cfg|txt\\)$|README')",
+      "mcp__mcp-obsidian__obsidian_batch_get_file_contents"
+    ]
+  }
+}

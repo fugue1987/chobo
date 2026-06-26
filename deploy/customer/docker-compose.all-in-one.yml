@@ -1,0 +1,45 @@
+# chobo CRM + 自带 postgres —— 零外部依赖的一键部署(适合试用/内网)。
+#
+# 用法:
+#   1. 在本目录建 .env,至少填:CHOBO_INGEST_SECRET=<强随机串>(可选 CHOBO_DB_PASSWORD)。
+#   2. docker load < chobo-crm-<ver>.tar.gz
+#   3. docker compose -f docker-compose.all-in-one.yml up -d
+#
+# 数据落在命名卷 chobo-pgdata。生产/已有 postgres 的接入方请改用 docker-compose.yml(自带库)。
+services:
+  chobo-db:
+    image: postgres:16-alpine
+    container_name: chobo-db
+    restart: always
+    environment:
+      POSTGRES_USER: chobo
+      POSTGRES_PASSWORD: ${CHOBO_DB_PASSWORD:-chobo}
+      POSTGRES_DB: chobo
+    volumes:
+      - chobo-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chobo -d chobo"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  chobo-crm:
+    image: chobo-crm:latest
+    container_name: chobo-crm
+    restart: always
+    depends_on:
+      chobo-db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      CHOBO_DATABASE_URL: postgres://chobo:${CHOBO_DB_PASSWORD:-chobo}@chobo-db:5432/chobo
+      CHOBO_INGEST_SECRET: ${CHOBO_INGEST_SECRET:?请在 .env 设 CHOBO_INGEST_SECRET}
+      CHOBO_PORT: "8787"
+      CHOBO_HOST: 0.0.0.0
+      CHOBO_WEB_DIR: /app/web
+      CHOBO_PRICE_SEED: /app/price-seed.json
+    ports:
+      - "8787:8787"
+
+volumes:
+  chobo-pgdata:

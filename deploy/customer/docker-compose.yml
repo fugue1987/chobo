@@ -1,0 +1,27 @@
+# chobo CRM —— 交付给接入方的 turnkey 部署(接入方自带 postgres)。
+#
+# 接入方只需三步:
+#   1. 准备一个空 postgres 库(库名随意,如 chobo)。
+#   2. cp chobo-crm.env.example chobo-crm.env,填 DATABASE_URL + 一个自定 secret。
+#   3. docker load < chobo-crm-<ver>.tar.gz  &&  docker compose up -d
+#
+# CRM 启动时**自动建表 + 灌价目表**(空库即可,无需手动建 schema),日志出现
+# "chobo CRM up" 即就绪。改业务服务 .env(见 README)指向本 CRM 端口、重启,就接好了。
+#
+# 想连 postgres 一起拉起(零外部依赖)?用 docker-compose.all-in-one.yml。
+services:
+  chobo-crm:
+    image: chobo-crm:latest          # 由 chobo 团队提供:docker load <tar.gz> 或从 registry pull
+    container_name: chobo-crm
+    restart: always
+    env_file: ./chobo-crm.env         # CHOBO_DATABASE_URL + CHOBO_INGEST_SECRET(接入方填)
+    environment:
+      NODE_ENV: production
+      CHOBO_PORT: "8787"
+      CHOBO_HOST: 0.0.0.0
+      CHOBO_WEB_DIR: /app/web
+      CHOBO_PRICE_SEED: /app/price-seed.json
+    ports:
+      # 暴露给 host:接入方服务用 http://<本机 IP 或 host.docker.internal>:8787/v1/events 上报。
+      # 换 host 端口改左侧即可(如 "9090:8787")。生产建议见 README「安全」一节。
+      - "8787:8787"

@@ -1,0 +1,10 @@
+:root{
+  --bg:#f8fafc; --surface:#ffffff; --text:#0f172a; --muted:#64748b;
+  --border:#e2e8f0; --accent:#4f46e5; --accent-soft:#eef2ff;
+  --success:#16a34a; --danger:#dc2626;
+  --success-soft:#dcfce7; --danger-soft:#fee2e2;
+  --radius:12px; --shadow:0 1px 3px rgba(0,0,0,.06);
+  --font: ui-sans-serif, system-ui, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);}

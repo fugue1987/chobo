@@ -1,0 +1,38 @@
+# 依赖
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
+# 构建产物
+dist/
+build/
+*.tsbuildinfo
+packages/sdk-node/*.tgz
+
+# 环境与密钥(永不提交)
+.env
+.env.*
+!.env.example
+
+# 本地事件落盘缓冲(SDK 溢出兜底)
+*.chobo-spool
+spool/
+
+# 日志与杂项
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# 本地开发参考资料(定价快照等,不进 git)
+dev_docs/
+dev-docs/
+
+# brainstorming 可视化伴侣的本地草图(不进 git)
+.superpowers/
+
+# claude
+.claude/
