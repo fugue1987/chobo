@@ -24,6 +24,7 @@ spool/
 # 日志与杂项
 *.log
 .DS_Store
+desktop.ini
 .idea/
 .vscode/
 
