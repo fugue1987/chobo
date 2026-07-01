@@ -1,14 +1,16 @@
 {
-  "version": "2026-06-26a",
+  "version": "2026-07-01a",
   "rows": [
     { "provider": "doubao", "model": "doubao-seed-2.0-pro", "operation": "chat", "input_tier_max": 32000,  "input_per_mtok": 3.2, "output_per_mtok": 16.0, "cache_read_per_mtok": 0.64, "currency": "CNY" },
     { "provider": "doubao", "model": "doubao-seed-2.0-pro", "operation": "chat", "input_tier_max": 128000, "input_per_mtok": 4.8, "output_per_mtok": 24.0, "cache_read_per_mtok": 0.96, "currency": "CNY" },
     { "provider": "doubao", "model": "doubao-seed-2.0-pro", "operation": "chat", "input_tier_max": 256000, "input_per_mtok": 9.6, "output_per_mtok": 48.0, "cache_read_per_mtok": 1.92, "currency": "CNY" },
+    { "provider": "doubao", "model": "doubao-seed-2.1-pro", "operation": "chat", "input_tier_max": 0, "input_per_mtok": 6.0, "output_per_mtok": 30.0, "cache_read_per_mtok": 1.2, "currency": "CNY" },
     { "provider": "newapi", "model": "gpt-image-2", "operation": "image", "input_tier_max": 0, "input_per_mtok": 8.0, "output_per_mtok": 30.0, "text_input_per_mtok": 5.0, "currency": "USD" },
     { "provider": "newapi", "model": "gpt-5.5", "operation": "chat", "input_tier_max": 0, "input_per_mtok": 5.0, "output_per_mtok": 30.0, "cache_read_per_mtok": 0.5, "currency": "USD" },
     { "provider": "newapi", "model": "gemini-3.5-flash", "operation": "chat", "input_tier_max": 0, "input_per_mtok": 1.5, "output_per_mtok": 9.0, "cache_read_per_mtok": 0.15, "reasoning_per_mtok": 9.0, "currency": "USD" }
   ],
   "aliases": [
-    { "provider": "doubao", "alias": "doubao-seed-2-0-pro-260215", "canonical": "doubao-seed-2.0-pro" }
+    { "provider": "doubao", "alias": "doubao-seed-2-0-pro-260215", "canonical": "doubao-seed-2.0-pro" },
+    { "provider": "doubao", "alias": "doubao-seed-2-1-pro-260628", "canonical": "doubao-seed-2.1-pro" }
   ]
 }
