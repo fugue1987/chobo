@@ -11,6 +11,7 @@
     "dev": "node --watch --import tsx src/server.ts",
     "start": "node dist/server.js",
     "reprice": "node dist/reprice-cli.js",
+    "seed:prices": "node dist/seed-cli.js",
     "test": "vitest run",
     "seed:events": "node --import tsx scripts/seed-events-cli.ts"
   },
