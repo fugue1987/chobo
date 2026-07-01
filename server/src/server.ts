@@ -16,8 +16,12 @@ async function main(): Promise<void> {
   const seeded = await syncPriceSeed(sql, cfg.priceSeedPath);
 
   const initial = await loadPriceTable(sql);
-  const store = createPriceStore(() => loadPriceTable(sql), initial);
-  const app = buildApp({ sql, cfg, priceTable: store.current });
+  let store: ReturnType<typeof createPriceStore>;
+  const app = buildApp({ sql, cfg, priceTable: () => store.current() });
+  store = createPriceStore(() => loadPriceTable(sql), initial, {
+    info: (o, m) => app.log.info(o as object, m),
+    warn: (o, m) => app.log.warn(o as object, m),
+  });
   if (cfg.priceRefreshSec > 0) store.start(cfg.priceRefreshSec * 1000);
 
   let shuttingDown = false;
