@@ -164,6 +164,8 @@ pm2 start ./start.sh --name chobo-crm
 - **唯一可能的一次性人工**:若某模型的事件在**补价之前**就已落库(当时成本算 NULL),跑一次
   `CHOBO_DATABASE_URL=... CHOBO_PRICE_SEED=./price-seed.json node server/dist/reprice-cli.js` 回填。
 
+- **只加/改模型价格、不想动整包**:无需换包、无需重启 —— 改 `price-seed.json` 的 `version` 并追加价目行,跑 `./update-prices.sh`,运行中的 CRM 会在 ≤ `CHOBO_PRICE_REFRESH_SEC` 秒内自动生效(默认 60s)。详见「交付指南.md → 以后新增模型价格(自助)」。
+
 ---
 
 ## 8. 故障排查

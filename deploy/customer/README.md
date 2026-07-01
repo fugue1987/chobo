@@ -74,3 +74,14 @@ CHOBO_SPOOL_DIR=./.chobo-spool
   **所以「换镜像 = 自动带上新价」,不用手动 SQL、不用单独 restart。**
 - **唯一可能的一次性人工**:若某模型的事件在**补价之前**就已落库(当时算 NULL),跑一次容器内
   `npm run reprice` 回填即可;补价在流量之前则零人工。
+
+## 新增模型价格(不重启)
+
+镜像已含 `seed-cli` / `reprice-cli`。把 `price-seed.json` 作为卷挂载(host 可编辑),改好 `version` 后:
+
+```bash
+docker exec chobo-crm node dist/seed-cli.js /app/price-seed.json   # 版本增量写库
+docker exec chobo-crm node dist/reprice-cli.js                     # 回填补价前的 NULL
+```
+
+运行中的容器会在 ≤ `CHOBO_PRICE_REFRESH_SEC` 秒内自动拾取新价(默认 60s,在 compose env 里可调)。
