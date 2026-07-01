@@ -17,6 +17,9 @@ export function resolveConfig(env: Record<string, string | undefined>): ServerCo
   const bodyLimit = Number(env.CHOBO_BODY_LIMIT ?? String(16 * 1024 * 1024));
   if (!Number.isInteger(bodyLimit) || bodyLimit < 1)
     throw new Error("chobo: CHOBO_BODY_LIMIT must be a positive integer");
+  const priceRefreshSec = Number(env.CHOBO_PRICE_REFRESH_SEC ?? "60");
+  if (!Number.isInteger(priceRefreshSec) || priceRefreshSec < 0)
+    throw new Error("chobo: CHOBO_PRICE_REFRESH_SEC must be a non-negative integer");
   return {
     databaseUrl,
     host: env.CHOBO_HOST ?? "0.0.0.0",
@@ -27,5 +30,6 @@ export function resolveConfig(env: Record<string, string | undefined>): ServerCo
     bodyLimit,
     priceSeedPath: env.CHOBO_PRICE_SEED ?? null,
     webDir: env.CHOBO_WEB_DIR ?? null,
+    priceRefreshSec,
   };
 }

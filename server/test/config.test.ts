@@ -46,4 +46,14 @@ describe("resolveConfig", () => {
     expect(resolveConfig({ CHOBO_DATABASE_URL: "postgres://x" }).webDir).toBeNull();
     expect(resolveConfig({ CHOBO_DATABASE_URL: "postgres://x", CHOBO_WEB_DIR: "/srv/web" }).webDir).toBe("/srv/web");
   });
+  it("priceRefreshSec defaults to 60, reads CHOBO_PRICE_REFRESH_SEC, 0 disables", () => {
+    expect(resolveConfig({ CHOBO_DATABASE_URL: "postgres://x" }).priceRefreshSec).toBe(60);
+    expect(resolveConfig({ CHOBO_DATABASE_URL: "postgres://x", CHOBO_PRICE_REFRESH_SEC: "0" }).priceRefreshSec).toBe(0);
+    expect(resolveConfig({ CHOBO_DATABASE_URL: "postgres://x", CHOBO_PRICE_REFRESH_SEC: "15" }).priceRefreshSec).toBe(15);
+  });
+  it("rejects invalid CHOBO_PRICE_REFRESH_SEC", () => {
+    expect(() => resolveConfig({ CHOBO_DATABASE_URL: "postgres://x", CHOBO_PRICE_REFRESH_SEC: "-1" })).toThrow(/CHOBO_PRICE_REFRESH_SEC/);
+    expect(() => resolveConfig({ CHOBO_DATABASE_URL: "postgres://x", CHOBO_PRICE_REFRESH_SEC: "abc" })).toThrow(/CHOBO_PRICE_REFRESH_SEC/);
+    expect(() => resolveConfig({ CHOBO_DATABASE_URL: "postgres://x", CHOBO_PRICE_REFRESH_SEC: "1.5" })).toThrow(/CHOBO_PRICE_REFRESH_SEC/);
+  });
 });

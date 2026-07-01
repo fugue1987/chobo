@@ -10,6 +10,7 @@ export interface ServerConfig {
   bodyLimit: number;             // Fastify request body limit in bytes (default 16 MiB)
   priceSeedPath: string | null;
   webDir: string | null;        // 看板静态产物目录(web/dist);null=纯 API
+  priceRefreshSec: number;      // 价目表轮询热载间隔(秒);0=关闭,退回仅开机加载
 }
 
 export type Operation = "chat" | "image" | "video" | "embedding";
