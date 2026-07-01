@@ -32,4 +32,8 @@ echo "→ [1/2] 写入价目(版本增量,幂等)…"
 "$NODE_BIN" "$ROOT/server/dist/seed-cli.js" "$CHOBO_PRICE_SEED"
 echo "→ [2/2] 回填补价前的 NULL 事件(幂等)…"
 "$NODE_BIN" "$ROOT/server/dist/reprice-cli.js"
-echo "✅ 完成。运行中的 CRM 将在 ≤ CHOBO_PRICE_REFRESH_SEC 秒内自动生效(默认 60s),无需重启。"
+if [ "${CHOBO_PRICE_REFRESH_SEC:-60}" = "0" ]; then
+  echo "✅ 价目已写库。注意:CHOBO_PRICE_REFRESH_SEC=0(轮询已关闭)→ 需重启 CRM 进程,新价才生效。"
+else
+  echo "✅ 完成。运行中的 CRM 将在 ≤ ${CHOBO_PRICE_REFRESH_SEC:-60}s 内自动拾取新价,无需重启。"
+fi
