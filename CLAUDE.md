@@ -85,7 +85,7 @@ v1 拆成 **5 份顺序计划**,加 Plan 6 多租户扩展(计划文件在 `docs
 
 - ✅ **裸 Node(无 Docker)交付包(`deploy/customer/bare-node/`,2026-06-26,chobo `01190be`):** 给"不跑 Docker、不用我们地址、只要数据进自有库"的接入方。**解压即交付** —— 接入方仅需 Linux + Node≥20 + 自备空 Postgres,填两项 env、`./start.sh` 即起,数据全进其自有库、不连任何外部地址;含已编译 CRM + **全部生产依赖**(纯 JS 跨平台,免联网装包)+ 看板 + `交付指南.md`(环境 / 手把手 / `usage_events` 逐字段说明 + admin 示例 SQL + 计费正确性守则)+ 可复现打包脚本 `package-crm-bare.sh`。已在 `node:20` 容器对解压件**端到端验证**:自动建表、灌价 `2026-06-26a`、看板可达、错 secret→401、按终端用户 CNY 计价精确入库。与 Docker turnkey(`deploy/customer/`)并列两种交付形态。
 
-- ✅ **价目表运行时热更新(2026-07-01):** 价目表运行时热更新(轮询热载,`CHOBO_PRICE_REFRESH_SEC` 默认 60/0=关闭)+ `seed-cli` + 裸 Node `update-prices.sh` + 接入方自助加模型文档;纯 CRM+打包+文档不改 SDK。
+- ✅ **价目表运行时热更新(2026-07-01,已合并 + 上线 + 生产验证):** 价目表运行时热载(轮询,`CHOBO_PRICE_REFRESH_SEC` 默认 60/0=关闭;崩溃保留上一版 + 防清空 + 原子替换,结构化日志)+ `seed-cli`(版本增量写库)+ 裸 Node `update-prices.sh`(写价+回填)+ 接入方自助加模型文档(含 doubao-2.1-pro 完整活样例)。纯 CRM+打包+文档,**不改 SDK/契约**。subagent-driven 8 任务(逐任务两段评审 + opus 终审)→ 合入 `main` → 部署生产(boot `priceRefreshSec:60`),fugue 亲测通过。首个自助加价实例:`doubao-seed-2.1-pro`(¥6/¥30/¥1.2 CNY,别名 `doubao-seed-2-1-pro-260628`,版本 `2026-07-01a`)+ 人读参考 `docs/模型定价.md`。接入方(AdopterA,裸 Node)交付件 `dist/chobo-crm-bare-*.tar.gz` + 升级/活样例文档已就绪待发。
 
 ## 规范
 

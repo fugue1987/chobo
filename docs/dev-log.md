@@ -5,6 +5,9 @@
 - CRM 价目表从"开机加载一次"改为可变持有器 + 轮询热载(`CHOBO_PRICE_REFRESH_SEC` 默认 60,0=关闭;崩溃保留上一版 + 防清空 + 原子替换);`syncPriceSeed` 抽成独立 `price-seed.ts`;新增 `seed-cli`(版本增量写库)+ 裸 Node 包 `update-prices.sh` 一键(写价+回填);接入方自助加模型文档(价目行字段 + 三元组自查)。
 - 纯 CRM+打包+文档,**不改 SDK/契约**,不发 SDK 版本。历史 NULL 仍靠 `reprice`。
 - 测试基线全绿(CRM 109)。
+- **合并 + 上线:** subagent-driven 8 任务(逐任务两段评审 + opus 终审「ready to merge」)→ 合入 `main` → 部署到生产 CRM;boot 日志 `priceRefreshSec:60` 证明热载在跑,fugue 亲测通过。
+- **首个自助加价实例:** 新增 `doubao-seed-2.1-pro` 价目(chat,无分档,¥6 in / ¥30 out / ¥1.2 cache,CNY)+ 别名归一 `doubao-seed-2-1-pro-260628`,价目版本 `2026-06-26a → 2026-07-01a`。按小时的缓存「存储」费(0.017/时)不建模(chobo 按 token 计、不按时)。新增人读参考 `docs/模型定价.md`(镜像 `price-seed.json`)。
+- **接入方交付(AdopterA,裸 Node 无 Docker):** 重打 `dist/chobo-crm-bare-*.tar.gz`(含热载 + `seed-cli` + `update-prices.sh` + price-seed)。`交付指南.md「以后新增模型价格」` 补 doubao-2.1-pro **完整 4 步活样例**(抄官方价 → 库内 `SELECT DISTINCT` 查三元组 → 加行/别名 → `update-prices.sh`);`README §7` 补「旧版一次性升级(不丢数据)」+ 计费安全警告(升级别用示例 price-seed 顶掉接入方现行价)。接入方应用服务零改动(纯 CRM 升级,SDK/契约未变)。
 
 ## 2026-06-24 — 立项 + 设计定稿
 
