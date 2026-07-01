@@ -44,7 +44,8 @@ cp "$SRC_DIR/start.sh"               "$STAGE/start.sh"
 cp "$SRC_DIR/chobo-crm.env.example"  "$STAGE/chobo-crm.env.example"
 cp "$SRC_DIR/README.md"              "$STAGE/README.md"
 cp "$SRC_DIR/交付指南.md"            "$STAGE/交付指南.md"
-chmod +x "$STAGE/start.sh"
+cp "$SRC_DIR/update-prices.sh"       "$STAGE/update-prices.sh"
+chmod +x "$STAGE/start.sh" "$STAGE/update-prices.sh"
 
 echo "→ [5/5] 打包…"
 ( cd "dist/${PKG}" && tar czf "../${PKG}.tar.gz" chobo-crm )
