@@ -77,11 +77,22 @@ CHOBO_SPOOL_DIR=./.chobo-spool
 
 ## 新增模型价格(不重启)
 
-镜像已含 `seed-cli` / `reprice-cli`。把 `price-seed.json` 作为卷挂载(host 可编辑),改好 `version` 后:
+镜像已含 `seed-cli` / `reprice-cli`。**注意:`price-seed.json` 是构建期烤进镜像的(`ci/Dockerfile`
+的 `COPY price-seed.json /app/price-seed.json`),本 compose 并未把它挂载出来 —— 直接改 host 上的文件
+不会被容器读到。** 两种方式:
 
-```bash
-docker exec chobo-crm node dist/seed-cli.js /app/price-seed.json   # 版本增量写库
-docker exec chobo-crm node dist/reprice-cli.js                     # 回填补价前的 NULL
-```
+- **热更新(不重启,推荐):** 在 host 改好 `price-seed.json`(bump `version` + 追加价目行),复制进容器再写库:
+  ```bash
+  docker cp price-seed.json chobo-crm:/app/price-seed.json
+  docker exec chobo-crm node dist/seed-cli.js /app/price-seed.json   # 版本增量写库
+  docker exec chobo-crm node dist/reprice-cli.js                     # 回填补价前的 NULL
+  ```
+  运行中的容器会在 ≤ `CHOBO_PRICE_REFRESH_SEC` 秒内自动拾取新价(默认 60s;设 0 则需重启容器)。
 
-运行中的容器会在 ≤ `CHOBO_PRICE_REFRESH_SEC` 秒内自动拾取新价(默认 60s,在 compose env 里可调)。
+- **或重建镜像:** 改好 `price-seed.json` 后 `docker compose up -d --build`(重新烤入新 seed,boot 自动
+  引入新版本),再 `docker exec chobo-crm node dist/reprice-cli.js` 回填补价前的 NULL。
+  > 用 all-in-one 部署时加 `-f docker-compose.all-in-one.yml`。
+
+> 想让 host 的 `price-seed.json` 改动直接被读到,可给 `chobo-crm` 服务加一行挂载:
+> `volumes: [ "./price-seed.json:/app/price-seed.json:ro" ]`,之后只需 `docker exec ... seed-cli.js`
+> + `reprice-cli.js`,免 `docker cp`。默认包未挂载,故上面两法开箱即用。
