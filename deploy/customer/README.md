@@ -79,7 +79,7 @@ CHOBO_SPOOL_DIR=./.chobo-spool
 
 镜像已含 `seed-cli` / `reprice-cli`。**注意:`price-seed.json` 是构建期烤进镜像的(`ci/Dockerfile`
 的 `COPY price-seed.json /app/price-seed.json`),本 compose 并未把它挂载出来 —— 直接改 host 上的文件
-不会被容器读到。** 两种方式:
+不会被容器读到。** 自助加价用下面这条路径:
 
 - **热更新(不重启,推荐):** 在 host 改好 `price-seed.json`(bump `version` + 追加价目行),复制进容器再写库:
   ```bash
@@ -89,9 +89,10 @@ CHOBO_SPOOL_DIR=./.chobo-spool
   ```
   运行中的容器会在 ≤ `CHOBO_PRICE_REFRESH_SEC` 秒内自动拾取新价(默认 60s;设 0 则需重启容器)。
 
-- **或重建镜像:** 改好 `price-seed.json` 后 `docker compose up -d --build`(重新烤入新 seed,boot 自动
-  引入新版本),再 `docker exec chobo-crm node dist/reprice-cli.js` 回填补价前的 NULL。
-  > 用 all-in-one 部署时加 `-f docker-compose.all-in-one.yml`。
+> 说明:上面这条路径写入的新价目**存进你自己的 Postgres(持久卷)**,即使日后重建/重启容器也不会丢
+> —— 所以日常加价这一条就够,**不需要重建镜像**。把新价"烤进镜像"属于团队侧重新出包再交付
+> (`package-crm.sh` → 新镜像 tar → `docker load`),不是接入方能自助 `--build` 的(交付包里没有构建
+> 上下文/Dockerfile),平时也用不到。
 
 > 想让 host 的 `price-seed.json` 改动直接被读到,可给 `chobo-crm` 服务加一行挂载:
 > `volumes: [ "./price-seed.json:/app/price-seed.json:ro" ]`,之后只需 `docker exec ... seed-cli.js`
