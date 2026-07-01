@@ -5,6 +5,7 @@ import { createSql, migrate } from "./db.js";
 import { loadPriceTable } from "./pricing.js";
 import { buildApp } from "./app.js";
 import { syncPriceSeed } from "./price-seed.js";
+import { createPriceStore } from "./price-store.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -14,8 +15,10 @@ async function main(): Promise<void> {
   await migrate(sql, join(here, "..", "migrations"));
   const seeded = await syncPriceSeed(sql, cfg.priceSeedPath);
 
-  const priceTable = await loadPriceTable(sql);
-  const app = buildApp({ sql, cfg, priceTable: () => priceTable });
+  const initial = await loadPriceTable(sql);
+  const store = createPriceStore(() => loadPriceTable(sql), initial);
+  const app = buildApp({ sql, cfg, priceTable: store.current });
+  if (cfg.priceRefreshSec > 0) store.start(cfg.priceRefreshSec * 1000);
 
   let shuttingDown = false;
   const shutdown = async (sig: string) => {
@@ -23,6 +26,7 @@ async function main(): Promise<void> {
     shuttingDown = true;
     app.log.info({ sig }, "chobo: shutting down");
     try {
+      store.stop();
       await app.close();
       await sql.end({ timeout: 5 });
       process.exit(0);
@@ -35,8 +39,9 @@ async function main(): Promise<void> {
   process.on("SIGINT", () => void shutdown("SIGINT"));
 
   await app.listen({ host: cfg.host, port: cfg.port });
+  const active = store.current();
   app.log.info(
-    { priceVersion: priceTable.version, seedVersion: seeded?.version ?? null, seedInserted: seeded?.inserted ?? false, rows: priceTable.rows.length, aliases: Object.keys(priceTable.aliases).length },
+    { priceVersion: active.version, priceRefreshSec: cfg.priceRefreshSec, seedVersion: seeded?.version ?? null, seedInserted: seeded?.inserted ?? false, rows: active.rows.length, aliases: Object.keys(active.aliases).length },
     "chobo CRM up",
   );
 }
