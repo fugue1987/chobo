@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { startPg, type PgHandle } from "./helpers.js";
-import { syncPriceSeed } from "../src/server.js";
+import { syncPriceSeed } from "../src/price-seed.js";
 import { loadPriceTable } from "../src/pricing.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
